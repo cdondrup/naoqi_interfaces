@@ -19,6 +19,7 @@ class SingleEvent(EventAbstractclass):
         # All proxies can be used as a member variables directly
         print "Movement detection:", self.ALPeoplePerception.isMovementDetectionEnabled()
 
+    # Overriding the abstract callback from EventAbstractclass
     def callback(self, *args, **kwargs):
         # Print the results
         print args
