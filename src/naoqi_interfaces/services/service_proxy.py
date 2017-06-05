@@ -15,6 +15,8 @@ class ServiceProxy(object):
         
         :param proxy_name: The name of the proxy to create, e.g. ALAnimatedSpeech
         """
+        if not isinstance(proxy_name, str):
+            raise TypeError("Proxy names have to be string objects.")
         self.proxy_name = proxy_name
         setattr(self, proxy_name, ALProxy(proxy_name))
 
