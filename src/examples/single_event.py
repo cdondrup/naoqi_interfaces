@@ -13,11 +13,11 @@ class SingleEvent(EventAbstractclass):
 
         # Using proxies. This can be done with get_proxy function or using them as member variables directly. Variable
         # names are defined by the proxy_name string.
-        print "Detection range:", self.get_proxy().getMaximumDetectionRange()
         print "Face detection enabled:", self.get_proxy(self.PROXY_NAME).isFaceDetectionEnabled()
-        # If the string is omitted, the proxy created using the super call is returned
-        print "Movement detection:", self.ALPeoplePerception.isMovementDetectionEnabled()
+        # If the string is omitted, the proxy created using the super call is returned.
+        print "Detection range:", self.get_proxy().getMaximumDetectionRange()
         # All proxies can be used as a member variables directly
+        print "Movement detection:", self.ALPeoplePerception.isMovementDetectionEnabled()
 
     def callback(self, *args, **kwargs):
         # Print the results
