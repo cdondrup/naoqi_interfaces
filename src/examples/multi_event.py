@@ -61,8 +61,10 @@ if __name__ == "__main__":
     s.start(globals())
 
     # Keep alive till Ctrl+C is called
-    Spinner().spin()
-
-    # Unsubscribe from event and stop the broker
-    s.stop()
-    con.shutdown_broker(broker)
+    spinner = Spinner()
+    # Register shutdown functions
+    spinner.register_on_shutdown_function(
+        s.stop,
+        lambda: con.shutdown_broker(broker)
+    )
+    spinner.spin()
