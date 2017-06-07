@@ -1,6 +1,6 @@
 from naoqi_interfaces.events.multi_event_abstractclass import MultiEventAbstractclass
 import naoqi_interfaces.comms.connection as con
-from naoqi_interfaces.utils.flow_control import Spinner
+from naoqi_interfaces.control.spinner import Spinner
 import argparse
 
 
