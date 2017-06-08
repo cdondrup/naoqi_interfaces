@@ -61,7 +61,7 @@ class EventAbstractclass(ALModule):
         """
         Syncing the global variable that hold the instance of this class to the dictionary of global variables provided 
         as an argument.
-        :param glob: The dictionary of global variables that should contain the variable hoding the instance, i.e. 
+        :param glob: The dictionary of global variables that should contain the variable holding the instance, i.e.
          `globals()` of the main file.
         """
         glob[self.name] = globals()[self.name]

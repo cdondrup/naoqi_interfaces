@@ -1,6 +1,6 @@
 from naoqi_interfaces.events.multi_event_abstractclass import MultiEventAbstractclass
 import naoqi_interfaces.comms.connection as con
-from naoqi_interfaces.control.spinner import Spinner
+from naoqi_interfaces.control.event_spinner import EventSpinner
 import argparse
 
 
@@ -45,6 +45,11 @@ class MultiEvent(MultiEventAbstractclass):
         print args
         print kwargs
 
+    def start(self, glob, a, b):
+        # Overriding the start function to show how to use custom arguments
+        super(MultiEvent, self).start(glob)
+        print a, b
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--ip", type=str, default="pepper",
@@ -58,13 +63,11 @@ if __name__ == "__main__":
 
     # Create an instance of the class and start the subscription
     s = MultiEvent()
-    s.start(globals())
 
     # Keep alive till Ctrl+C is called
-    spinner = Spinner()
-    # Register shutdown functions
-    spinner.register_on_shutdown_function(
-        s.stop,
-        lambda: con.shutdown_broker(broker)
+    spinner = EventSpinner(
+        globals_=globals(),
+        broker=broker,
+        events=[(s, ["start", "event"])] # Using custom arguments for MultiEvent.start
     )
     spinner.spin()

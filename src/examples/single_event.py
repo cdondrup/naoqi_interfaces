@@ -1,6 +1,6 @@
 from naoqi_interfaces.events.event_abstractclass import EventAbstractclass
 import naoqi_interfaces.comms.connection as con
-from naoqi_interfaces.control.spinner import Spinner
+from naoqi_interfaces.control.event_spinner import EventSpinner
 import argparse
 
 
@@ -30,6 +30,7 @@ class SingleEvent(EventAbstractclass):
         # Using the memory. Every event class has it's own memory member variable
         print "Distance:", self.memory.getData("PeoplePerception/Person/" + str(person_id) + "/Distance")
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--ip", type=str, default="pepper",
@@ -43,13 +44,11 @@ if __name__ == "__main__":
 
     # Create an instance of the class and start the subscription
     s = SingleEvent()
-    s.start(globals())
 
-    # Keep alive till Ctrl+C is called
-    spinner = Spinner()
-    # Register shutdown functions
-    spinner.register_on_shutdown_function(
-        s.stop,
-        lambda: con.shutdown_broker(broker)
+    # Start subscribing and keep alive till Ctrl+C is called
+    spinner = EventSpinner(
+        globals_=globals(),
+        broker=broker,
+        events=[s]
     )
     spinner.spin()
