@@ -18,6 +18,7 @@ class EventSpinner(object):
     def __init__(self, globals_, broker, events=None):
         self.globals_ = globals_
         self.broker = broker
+        self.__on_shutdown = []
         self.events = events if isinstance(events, (list, tuple)) else [events] if events is not None else []
         self.__shutdown_requested = False
         self.__start()
@@ -47,6 +48,17 @@ class EventSpinner(object):
         print "Executing shutdown functions."
         for event in self.events:
             event[0].stop() if isinstance(event, (tuple, list)) else event.stop()
+        for f in self.__on_shutdown: f()
         print "Killing broker"
         con.shutdown_broker(self.broker)
         print 'Good-bye'
+
+    def on_shutdown(self, *args):
+        """
+        Register on shutdown functions. These functions cannot have arguments. You can list as many functions as you
+        want. These will be executed in order.
+        This can be called multiple times.
+        :param args: The function(s) to be called on shutdown.
+        """
+        args = args if isinstance(args, (list, tuple)) else [args]
+        self.__on_shutdown.extend(args)
