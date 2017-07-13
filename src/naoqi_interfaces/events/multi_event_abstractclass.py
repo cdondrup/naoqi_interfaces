@@ -29,7 +29,8 @@ class MultiEventAbstractclass(EventAbstractclass):
             if not isinstance(e[2], (types.FunctionType, types.BuiltinFunctionType, types.MethodType,
                                      types.BuiltinMethodType, types.UnboundMethodType)):
                 raise TypeError("Callbacks have to be function objects.")
-            self.create_proxy(e[1])
+            if e[1] is not None:
+                self.create_proxy(e[1])
         self.events = events
 
     def _subscribe(self):
