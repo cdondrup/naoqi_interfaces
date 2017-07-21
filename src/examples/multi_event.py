@@ -1,25 +1,18 @@
-from naoqi_interfaces.events.multi_event_abstractclass import MultiEventAbstractclass
-import naoqi_interfaces.comms.connection as con
+from naoqi_interfaces.events.multi_event_abstractclass import MultiEventAbstractclass, Event
 from naoqi_interfaces.control.event_spinner import EventSpinner
 import argparse
+import time
 
 
 class MultiEvent(MultiEventAbstractclass):
-    def __init__(self):
-        super(self.__class__, self).__init__(
-            inst=self,
-            events=[
-                ("PeoplePerception/PeopleDetected", "ALPeoplePerception", self.callback_person),
-                ("GazeAnalysis/PeopleLookingAtRobot", "ALGazeAnalysis", self.callback_gaze),
-                ("FaceDetected", "ALFaceDetection", self.callback_face)
-            ]
-        )
-        # Using proxies
-        print "Detection range:", self.get_proxy("ALPeoplePerception").getMaximumDetectionRange()
-        print "Gaze analysis tolerance:", self.ALGazeAnalysis.getTolerance()
-        print "Face recognition enabled:", self.ALFaceDetection.isRecognitionEnabled()
-        # Proxies can be accessed either via their name as a string using `get_proxy` or directly as a member variable.
-        # Variable names for proxies are the same as the string in the event tuple.
+    # def __init__(self):
+    #     super(MultiEvent, self).__init__(
+    #         events=[  # There are three different ways to define an event. proxy_name is the only one that can be None.
+    #             ("PeoplePerception/PeopleDetected", "ALPeoplePerception", self.callback_person),  # Tuple
+    #             ["GazeAnalysis/PeopleLookingAtRobot", "ALGazeAnalysis", self.callback_gaze],  # List
+    #             Event(event_name="FaceDetected", proxy_name="ALGazeAnalysis", callback=self.callback_face)  # Or Event
+    #         ]
+    #     )
 
     def callback_person(self, *args, **kwargs):
         print "PERSON"
@@ -28,9 +21,9 @@ class MultiEvent(MultiEventAbstractclass):
         person_id = args[1][1][0][0]
         print person_id
         # Using the memory. Every event class has it's own memory member variable
-        print "Distance:", self.memory.getData("PeoplePerception/Person/"+str(person_id)+"/Distance")
+        print "Distance:", self.__memory__.getData("PeoplePerception/Person/" + str(person_id) + "/Distance")
         try:
-            print "Head angles from gaze analysis:", self.memory.getData(
+            print "Head angles from gaze analysis:", self.__memory__.getData(
                 "PeoplePerception/Person/" + str(person_id) + "/HeadAngles")
         except RuntimeError:
             print "No gaze information"
@@ -45,10 +38,24 @@ class MultiEvent(MultiEventAbstractclass):
         print args
         print kwargs
 
-    def start(self, glob, a, b):
-        # Overriding the start function to show how to use custom arguments
-        super(MultiEvent, self).start(glob)
+    def init(self, glob, a, b):
+        # Overriding the init function to show how to use custom arguments. This is optional!
+        # The first argument always has to be passed to the super call. This will contain the globals. All arguments
+        # after 'glob' can be used to your liking.
+        super(MultiEvent, self).init(glob)
+        self.a = a
         print a, b
+        # Using proxies
+        print "Detection range:", self.get_proxy("ALPeoplePerception").getMaximumDetectionRange()
+        print "Gaze analysis tolerance:", self.ALGazeAnalysis.getTolerance()
+        # print "Face recognition enabled:", self.ALFaceDetection.isRecognitionEnabled()
+        # Proxies can be accessed either via their name as a string using `get_proxy` or directly as a member variable.
+        # Variable names for proxies are the same as the string in the event tuple.
+
+    def my_control_loop(self):
+        print "Loop", self.a
+        time.sleep(1)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -58,16 +65,31 @@ if __name__ == "__main__":
                         help="Robot port number")
     args = parser.parse_args()
 
-    # Create a broker to connect to the robot
-    broker = con.create_broker(args.ip, args.port)
+    # Create an instance of the class and init the subscription
+    s1 = MultiEvent(
+        events=[  # There are three different ways to define an event. proxy_name is the only one that can be None.
+            ("PeoplePerception/PeopleDetected", "ALPeoplePerception", "callback_person"),  # Tuple
+            ["GazeAnalysis/PeopleLookingAtRobot", "ALGazeAnalysis", "callback_gaze"],  # List
+            Event(event_name="FaceDetected", proxy_name="ALGazeAnalysis", callback="callback_face")  # Or Event
+        ]
+    )
+    s2 = MultiEvent(
+        events=[  # There are three different ways to define an event. proxy_name is the only one that can be None.
+            ("PeoplePerception/PeopleDetected", "ALPeoplePerception", "callback_person"),  # Tuple
+            ["GazeAnalysis/PeopleLookingAtRobot", "ALGazeAnalysis", "callback_gaze"],  # List
+            Event(event_name="FaceDetected", proxy_name="ALGazeAnalysis", callback="callback_face")  # Or Event
+        ]
+    )
 
-    # Create an instance of the class and start the subscription
-    s = MultiEvent()
-
-    # Keep alive till Ctrl+C is called
+    # Start the broker, call the 'init' functions of all event classes, and keep alive till Ctrl+C is called
     spinner = EventSpinner(
         globals_=globals(),
-        broker=broker,
-        events=[(s, ["start", "event"])] # Using custom arguments for MultiEvent.start
+        ip=args.ip,
+        port=args.port,
+        events=[
+            (s1, ["instance 1", "some string"]),
+            (s2, ["instance 2", 5])
+        ]  # Using custom arguments for init function. If no arguments are to be given just use: events=[s1,s2]
     )
-    spinner.spin()
+    # The spinner can call arbitrary functions without arguments while running.
+    spinner.spin(s1.my_control_loop, s2.my_control_loop)

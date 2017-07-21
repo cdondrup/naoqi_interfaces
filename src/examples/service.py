@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # Create a broker to connect to the robot
     broker = con.create_broker(args.ip, args.port)
 
-    # Create an instance of the class and start the subscription
+    # Create an instance of the class and init the subscription
     s = AnimatedSay()
     s.say("Hello World!")
 
