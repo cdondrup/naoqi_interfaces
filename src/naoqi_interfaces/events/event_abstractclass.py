@@ -1,7 +1,6 @@
 from naoqi import ALProxy, ALModule
 from abc import ABCMeta, abstractmethod
 import uuid
-from threading import Thread
 
 
 class EventAbstractclass(ALModule):
@@ -21,6 +20,7 @@ class EventAbstractclass(ALModule):
         self._name = str(uuid.uuid4()).replace('-', '_') if name == "" else name
         self._make_global(self._name, self)
         self.__proxy_name__ = proxy_name
+        self.__memory__ = None
 
     def _make_global(self, name, var):
         """
@@ -59,6 +59,8 @@ class EventAbstractclass(ALModule):
         :param glob: The dictionary of global variables that should contain the variable holding the instance, i.e.
          `globals()` of the main file.
         """
+        if self._name in glob:
+            raise NameError("'%s' already exists in globals. New instance cannot be synced" % self._name)
         glob[self._name] = globals()[self._name]
 
     def get_proxy(self, proxy_name=""):
@@ -66,7 +68,7 @@ class EventAbstractclass(ALModule):
         The proxy object created can either be used directly as a member variable if the name is known or via this 
         function. If no proxy_name is specified the proxy created during construction will be returned.
         
-        :param proxy_name: Option argument. If omitted, the main proxy for the event will be returned
+        :param proxy_name: Optional argument. If omitted, the main proxy for the event will be returned
         :return: The created proxy object to interact with 
         """
         return getattr(self, self.__proxy_name__ if proxy_name == "" else proxy_name)
@@ -91,10 +93,9 @@ class EventAbstractclass(ALModule):
         """
         pass
 
-    def init(self, glob):
+    def initialise_proxies_and_memory(self, glob):
         """
-        Subscribes to the event, syncs the necessary globals, and creates all the proxies. This function can be
-        overridden to run initialisation code. The super function always has to be called.
+        Syncs the necessary globals, and creates all the proxies and the memory. Called by the spinner.
         
         :param glob: The globals() of the main file 
         """
@@ -109,8 +110,16 @@ class EventAbstractclass(ALModule):
 
         self.sync_global(glob)
 
+    def init(self, *args):
+        """
+        Override this function to call proxy functions etc. before the spinner subscribes to the event.
+        """
+        pass
+
     def start(self):
-        print "subscribing"
+        """
+        Subscribes to event given at construction
+        """
         self._subscribe()
 
     def stop(self):

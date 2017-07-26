@@ -30,10 +30,12 @@ class EventSpinner(object):
     def __start(self):
         for event in self.events:
             if isinstance(event, (tuple, list)):
-                event[0].init(self.globals_, *(event[1] if isinstance(event[1], (tuple, list)) else [event[1]]))
+                event[0].initialise_proxies_and_memory(self.globals_)
+                event[0].init(*(event[1] if isinstance(event[1], (tuple, list)) else [event[1]]))
                 event[0].start()
             else:
-                event.init(self.globals_)
+                event.initialise_proxies_and_memory(self.globals_)
+                event.init()
                 event.start()
 
     def spin(self, *args):
@@ -45,7 +47,7 @@ class EventSpinner(object):
         while not self.__shutdown_requested:
             for f in args:
                 f()
-            time.sleep(.1)
+            time.sleep(.01)
 
     def _signal_handler(self, *args):
         print "Caught Ctrl+C, stopping."

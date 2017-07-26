@@ -78,8 +78,8 @@ class MultiEventAbstractclass(EventAbstractclass):
             raise TypeError("Proxy names have to be string objects.")
         return getattr(self, proxy_name)
 
-    def init(self, glob):
-        super(MultiEventAbstractclass, self).init(glob)
+    def initialise_proxies_and_memory(self, glob):
+        super(MultiEventAbstractclass, self).initialise_proxies_and_memory(glob)
         for e in self.events:
             if e[1] is not None:
                 self.create_proxy(e[1])

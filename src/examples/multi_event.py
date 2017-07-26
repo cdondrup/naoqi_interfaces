@@ -14,6 +14,17 @@ class MultiEvent(MultiEventAbstractclass):
     #         ]
     #     )
 
+    def init(self, *args):
+        # Overriding the init function to show how to use custom arguments and call proxies. This is optional!
+        self.a = args[0]
+        print args
+        # Using proxies
+        print "Detection range:", self.get_proxy("ALPeoplePerception").getMaximumDetectionRange()
+        print "Gaze analysis tolerance:", self.ALGazeAnalysis.getTolerance()
+        # print "Face recognition enabled:", self.ALFaceDetection.isRecognitionEnabled()
+        # Proxies can be accessed either via their name as a string using `get_proxy` or directly as a member variable.
+        # Variable names for proxies are the same as the string in the event tuple.
+
     def callback_person(self, *args, **kwargs):
         print "PERSON"
         print args
@@ -37,20 +48,6 @@ class MultiEvent(MultiEventAbstractclass):
         print "FACE"
         print args
         print kwargs
-
-    def init(self, glob, a, b):
-        # Overriding the init function to show how to use custom arguments. This is optional!
-        # The first argument always has to be passed to the super call. This will contain the globals. All arguments
-        # after 'glob' can be used to your liking.
-        super(MultiEvent, self).init(glob)
-        self.a = a
-        print a, b
-        # Using proxies
-        print "Detection range:", self.get_proxy("ALPeoplePerception").getMaximumDetectionRange()
-        print "Gaze analysis tolerance:", self.ALGazeAnalysis.getTolerance()
-        # print "Face recognition enabled:", self.ALFaceDetection.isRecognitionEnabled()
-        # Proxies can be accessed either via their name as a string using `get_proxy` or directly as a member variable.
-        # Variable names for proxies are the same as the string in the event tuple.
 
     def my_control_loop(self):
         print "Loop", self.a

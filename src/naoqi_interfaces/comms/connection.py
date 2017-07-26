@@ -20,10 +20,10 @@ def create_broker(ip, port, target_ip="0.0.0.0", target_port=0):
                           target_port,  # find a free port and use it
                           ip,  # parent broker IP
                           port)
-        print("Connected to %s:%s" % (ip, str(port)))
+        print "Connected to %s:%s" % (ip, str(port))
         return broker
     except RuntimeError:
-        print("Cannot connect to %s:%s. Retrying in 1 second." % (ip, str(port)))
+        print "Cannot connect to %s:%s. Retrying in 1 second." % (ip, str(port))
         time.sleep(1)
         return create_broker(ip, port, target_ip=target_ip, target_port=target_port)
 
@@ -31,6 +31,6 @@ def create_broker(ip, port, target_ip="0.0.0.0", target_port=0):
 def shutdown_broker(broker):
     """
     Terminates connection and shuts down the broker. Call in destructor or before ending your script
-    :param broker: The broker instance create with create_broker
+    :param broker: The broker instance created with create_broker
     """
     broker.shutdown()
