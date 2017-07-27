@@ -3,9 +3,9 @@ import time
 import naoqi_interfaces.comms.connection as con
 
 
-class EventSpinner(object):
+class EventManager(object):
     """
-    A simple spinner that helps keeping the programme alive while reacting to events. This class also takes care of
+    A simple manager that helps keeping the programme alive while reacting to events. This class also takes care of
     starting and stopping the given events and broker.
 
     :param globals_: The global variables of the main file, i.e. globals()

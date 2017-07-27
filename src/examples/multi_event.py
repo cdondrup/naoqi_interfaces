@@ -1,5 +1,5 @@
 from naoqi_interfaces.events.multi_event_abstractclass import MultiEventAbstractclass, Event
-from naoqi_interfaces.control.event_spinner import EventSpinner
+from naoqi_interfaces.control.event_spinner import EventManager
 import argparse
 import time
 
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     )
 
     # Start the broker, call the 'init' functions of all event classes, and keep alive till Ctrl+C is called
-    spinner = EventSpinner(
+    spinner = EventManager(
         globals_=globals(),
         ip=args.ip,
         port=args.port,
