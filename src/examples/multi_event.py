@@ -1,5 +1,5 @@
 from naoqi_interfaces.events.multi_event_abstractclass import MultiEventAbstractclass, Event
-from naoqi_interfaces.control.event_spinner import EventManager
+from naoqi_interfaces.control.event_manager import EventManager
 import argparse
 import time
 

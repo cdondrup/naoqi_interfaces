@@ -1,5 +1,5 @@
 from naoqi_interfaces.events.event_abstractclass import EventAbstractclass
-from naoqi_interfaces.control.event_spinner import EventManager
+from naoqi_interfaces.control.event_manager import EventManager
 import argparse
 
 
@@ -20,10 +20,11 @@ class SingleEvent(EventAbstractclass):
         print args
         print kwargs
 
-        person_id = args[1][1][0][0]
-        print "Person ID:", person_id
-        # Using the memory. Every event class has it's own memory member variable
-        print "Distance:", self.__memory__.getData("PeoplePerception/Person/" + str(person_id) + "/Distance")
+        for person in args[1][1]:
+            person_id = person[0]
+            print "Person ID:", person_id
+            # Using the memory. Every event class has it's own memory member variable
+            print "Distance:", self.__memory__.getData("PeoplePerception/Person/" + str(person_id) + "/Distance")
 
 
 if __name__ == "__main__":
