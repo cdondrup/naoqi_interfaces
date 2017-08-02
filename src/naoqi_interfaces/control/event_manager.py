@@ -18,7 +18,8 @@ class EventManager(object):
     :param target_ip: IP to listen to
     :param target_port: Port to use
     """
-    def __init__(self, globals_, ip, port, events=None, target_ip="0.0.0.0", target_port=0):
+    def __init__(self, globals_, ip, port, events=None, target_ip="0.0.0.0", target_port=0, auto_start=True):
+        self.auto_start = auto_start
         self.globals_ = globals_
         self.broker = con.create_broker(ip, port, target_ip, target_port)
         self.__on_shutdown = []
@@ -32,11 +33,11 @@ class EventManager(object):
             if isinstance(event, (tuple, list)):
                 event[0].initialise_proxies_and_memory(self.globals_)
                 event[0].init(*(event[1] if isinstance(event[1], (tuple, list)) else [event[1]]))
-                event[0].start()
+                if self.auto_start: event[0].start()
             else:
                 event.initialise_proxies_and_memory(self.globals_)
                 event.init()
-                event.start()
+                if self.auto_start: event.start()
 
     def spin(self, *args):
         """
