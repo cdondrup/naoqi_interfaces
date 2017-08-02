@@ -126,4 +126,7 @@ class EventAbstractclass(ALModule):
         """
         Unsubscribes from event given at construction
         """
-        self._unsubscribe()
+        try:
+            self._unsubscribe()
+        except RuntimeError as e:
+            print "Warning:", e
