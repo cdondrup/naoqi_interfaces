@@ -55,12 +55,25 @@ class MultiEventAbstractclass(EventAbstractclass):
                 e[2].func_name if not isinstance(e[2], str) else e[2]
             )
 
+    def subscribe(self, event, callback):
+        self.__memory__.subscribeToEvent(
+            event,
+            self._name,
+            callback.func_name if not isinstance(callback, str) else callback
+        )
+
     def _unsubscribe(self):
         for e in self.events:
             self.__memory__.unsubscribeToEvent(
                 e[0],
                 self._name
             )
+
+    def unsubscribe(self, event):
+        self.__memory__.unsubscribeToEvent(
+            event,
+            self._name
+        )
 
     def callback(self, *args, **kwargs):
         # Overriding this from EventAbstractclass so we do not require to have one in the inheriting class.
