@@ -22,6 +22,11 @@ class EventAbstractclass(ALModule):
         self._make_global(self._name, self)
         self.__proxy_name__ = proxy_name
         self.__memory__ = None
+        self.__is_shutdown = False
+
+    def __del__(self):
+        self.__is_shutdown = True
+        super(EventAbstractclass, self).__del__()
 
     def _make_global(self, name, var):
         """
@@ -82,7 +87,7 @@ class EventAbstractclass(ALModule):
         """
         if not isinstance(proxy_name, str):
             raise TypeError("Proxy names have to be string objects.")
-        while True:
+        while not self.__is_shutdown:
             try:
                 setattr(self, proxy_name, ALProxy(proxy_name))
                 break
