@@ -1,6 +1,7 @@
 from naoqi import ALProxy, ALModule
 from abc import ABCMeta, abstractmethod
 import uuid
+import time
 
 
 class EventAbstractclass(ALModule):
@@ -81,7 +82,13 @@ class EventAbstractclass(ALModule):
         """
         if not isinstance(proxy_name, str):
             raise TypeError("Proxy names have to be string objects.")
-        setattr(self, proxy_name, ALProxy(proxy_name))
+        while True:
+            try:
+                setattr(self, proxy_name, ALProxy(proxy_name))
+                break
+            except RuntimeError:
+                print "Server '%s' could not be found. Maybe it is not running, yet. Retrying." % proxy_name
+                time.sleep(1.)
 
     @abstractmethod
     def callback(self, *args, **kwargs):
